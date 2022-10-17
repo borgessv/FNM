@@ -3,11 +3,13 @@
 % Prof.: Dr. E.T.A. van der Weide
 % Student: Vítor Borges Santos
 %
-% Assignment 1
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Equation to be solved:
 % d^4u/dx^4 = sin(2*pi*x), 0<=x=<1
-% Boundary conditions: u(x=0)=u(x=1)=0, du/dx(x=0)=du/dx(x=1)=0
+%
+% Boundary conditions: 
+% u(x=0)=u(x=1)=0, 
+% du/dx(x=0)=du/dx(x=1)=0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Exact Solution
 clear; close all; clc
