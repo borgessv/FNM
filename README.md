@@ -1,4 +1,6 @@
-# FNM
-Fundamentals of Numerical Methods
+# Fundamentals of Numerical Methods
 
-Codes created to solve the assingments of the course, covering Finite Differences Method (FDM) and Finite Element Method (FEM).
+Matlab codes created to solve the assignments of the course on topics of:
+
+- FDM - Finite Differences Method 
+- FEM - Finite Element Method 
