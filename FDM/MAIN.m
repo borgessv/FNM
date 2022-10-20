@@ -18,15 +18,20 @@ clear; close all; clc
 syms u(x) x
 d4u(x) = diff(u,x,4);
 du(x) = diff(u,x,1);
-x_vec = 0:0.01:1;
+x_vec = 0:0.02:1;
 f(x) = sin(2*pi*x);
 BC = [u(0) == 0, u(1) == 0, du(0) == 0, du(1) == 0];
 
 sol_exact(x) = (dsolve(d4u == f,BC));
 
 fig = figure;
-plot(x_vec,sol_exact(x_vec),'--k','linewidth',1.25)
-hold on
+ax1 = gca;
+plot(ax1,x_vec,sol_exact(x_vec),'ok','linewidth',1.25)
+hold(ax1,'on')
+% Zoom in box:
+ax2 = axes('position',[.15 .170 .15 .30]);
+plot(ax2,x_vec,sol_exact(x_vec),'ok','linewidth',1.25)
+hold(ax2,'on')
 
 
 %% Finite Differences Method
@@ -37,8 +42,8 @@ n_ghost = 1; % Number of ghost points to solve the BCs (if needed)
 % Approximation of the derivatives u' and u'''' using FDM (symbolic):
 [d4u,d4u_error] = central_FDM(4,4);
 [du,du_error] = central_FDM(1,2);
-fprintf('u'''''''': %s + O(%s) \n', char(d4u), char(d4u_error))
-fprintf('u'': %s + O(%s) \n', char(du), char(du_error))
+fprintf('u'''''''' = %s + O(%s) \n', char(d4u), char(d4u_error))
+fprintf('u'' = %s + O(%s) \n', char(du), char(du_error))
 fprintf(['\nNote: In the expressions above, the indexes of "u" do not have relation with the actual discretization points, ' ...
     'they are just illustrative. \nFor example, in a 2nd order approximation of a 1st order derivative around an arbitrary point j, ' ...
     'u1 = u(j-1) and u3 = u(j+1), \nwhile u2 = u(j) does not appear in such approximation.\n\n'])   
@@ -67,7 +72,7 @@ for k = 1:length(N_vec)
 
     % Algebraic equations for interior points:
     for i = 2+n_ghost:N_eff-n_ghost-1
-        eq(i) = central_FDM_subs(u_var,i,d4u,h(k)) == f(h(k)*(i-(2+n_ghost)));
+        eq(i) = central_FDM_subs(u_var,i,d4u,h(k)) == f(h(k)*(i-(1+n_ghost)));
     end
     
     %tic
@@ -82,12 +87,23 @@ for k = 1:length(N_vec)
     end
 
     % Plotting results:
-    plot(x_vec_FDM,sol_FDM,'linewidth',1.25,'color', custom_color(k,:))
+    figure(fig)
+    plot(ax1,x_vec_FDM,sol_FDM,'linewidth',1.25,'color', custom_color(k,:))
     lgd_entry{k} = ['FDM: $N=$ ',num2str(N_vec(k))];
+    %indexOfInterest = (x_vec_FDM < 0.1) & (x_vec_FDM >= 0); % range of t near perturbation
+    plot(ax2,x_vec_FDM,sol_FDM,'linewidth',1.25,'color', custom_color(k,:)) % plot on new axes
 
     % L2 norm of error:
     L2(k) = sqrt((1/(N-2))*sum((double(sol_exact(x_vec_FDM(:,2:end-1)).') - sol_FDM(2:end-1,:)).^2));
 end
+figure(fig)
+ax1.FontSize = 12; 
+grid(ax1,'on');
+xlabel(ax1,'$x$','Interpreter','latex','fontsize',16)
+ylabel(ax1,'$u(x)$','Interpreter','latex','fontsize',16)
+legend(ax1,'Exact',lgd_entry{:},'interpreter','latex','fontsize',13);
+xlim(ax2,[0 0.05]);
+box(ax2,'on') 
 
 fig2 = figure;
 loglog(N_vec,L2,'ob','MarkerFaceColor','b')
@@ -105,17 +121,32 @@ ax.FontSize = 12;
 
 %% Richardson Extrapolation
 uh = uh(2:end-1,:);
+x_vec_R = h(length(N_vec)-2):h(length(N_vec)-2):1-h(length(N_vec)-2);
 r = h(2)/h(1);
 p = log((uh(:,3) - uh(:,2))./(uh(:,2) - uh(:,1)))/log(r);
 C = (uh(:,3) - uh(:,2))./(h(length(N_vec)-2).^p.*(r.^p).*(r.^p - 1));
 u_ex = uh(:,3) + r.^p./(1-r.^p).*(uh(:,3) - uh(:,2));
+u_ex = double(subs(u_ex,NaN,0));
+L2_R = sqrt((1/(length(x_vec_R)))*sum((double(sol_exact(x_vec_R).') - u_ex).^2));
 
+fig3 = figure;
+ax1 = gca;
+x_vec2 = 0:0.005:1;
+plot(ax1,x_vec2,sol_exact(x_vec2),'--k','linewidth',1.25)
+hold(ax1,'on')
+plot(ax1,x_vec_R,uh(:,3),'ob','markersize',8)
+plot(ax1,x_vec_R,u_ex,'xr','markersize',8)
 
-figure(fig)
-plot(0:h(length(N_vec)-2):1,[0;u_ex;0],'xr','markersize',8)
-ax = gca;
-ax.FontSize = 12; 
-grid on
-xlabel('$x$','Interpreter','latex','fontsize',16)
-ylabel('$u(x)$','Interpreter','latex','fontsize',16)
-lgd = legend('Exact',lgd_entry{:},'Richardson','interpreter','latex','fontsize',13);
+ax2 = axes('position',[.15 .170 .15 .30]);
+plot(ax2,x_vec2,sol_exact(x_vec2),'--k','linewidth',1.25)
+hold(ax2,'on')
+plot(ax2,x_vec_R,uh(:,3),'ob','markersize',8)
+plot(ax2,x_vec_R,u_ex,'xr','markersize',8)
+
+ax1.FontSize = 12; 
+grid(ax1,'on');
+xlabel(ax1,'$x$','Interpreter','latex','fontsize',16)
+ylabel(ax1,'$u(x)$','Interpreter','latex','fontsize',16)
+lgd = legend(ax1,'Exact','FDM: $N = 129$','Richardson','interpreter','latex','fontsize',13);
+xlim(ax2,[0 0.2]);
+box(ax2,'on') 
