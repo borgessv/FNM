@@ -1,7 +1,8 @@
-%% Fundamentals of Numerical Methods
+% Code to solve the problems of the assignment 1 of the Fundamentals of
+% Numerical Methods course taken at the University of Twente
 %
-% Prof.: Dr. E.T.A. van der Weide
-% Student: Vítor Borges Santos
+% Author: Vítor Borges Santos - borgessv93@gmail.com
+% Date: 20/10/2022
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Equation to be solved:
@@ -36,8 +37,8 @@ n_ghost = 1; % Number of ghost points to solve the BCs (if needed)
 % Approximation of the derivatives u' and u'''' using FDM (symbolic):
 [d4u,d4u_error] = central_FDM(4,4);
 [du,du_error] = central_FDM(1,2);
-fprintf('u"": %s + O(%s) \n', char(d4u), char(d4u_error))
-fprintf('u": %s + O(%s) \n', char(du), char(du_error))
+fprintf('u'''''''': %s + O(%s) \n', char(d4u), char(d4u_error))
+fprintf('u'': %s + O(%s) \n', char(du), char(du_error))
 fprintf(['\nNote: In the expressions above, the indexes of "u" do not have relation with the actual discretization points, ' ...
     'they are just illustrative. \nFor example, in a 2nd order approximation of a 1st order derivative around an arbitrary point j, ' ...
     'u1 = u(j-1) and u3 = u(j+1), \nwhile u2 = u(j) does not appear in such approximation.\n\n'])   
