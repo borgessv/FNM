@@ -46,7 +46,7 @@ fprintf(['\nNote: In the expressions above, the indexes of "u" do not have relat
 lgd_entry = cell(length(N_vec),1);
 L2 = zeros(length(N_vec),1);
 h = zeros(length(N_vec),1);
-uh = zeros(N_vec(length(N_vec)-2),3);
+uh = zeros()
 k_aux = 0;
 custom_color = hsv(length(N_vec));
 for k = 1:length(N_vec)
